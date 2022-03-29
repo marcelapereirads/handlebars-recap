@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Makeup Catalog</title>
+    <link rel="stylesheet" href="index.css">
     <script src="handlebars-v4.7.7.js"></script>
 </head>
 <body>
@@ -13,12 +14,12 @@
     <div id="products">
         <script type="text/x-handlebars-template" id="load-products">
             {{#each products}}
-            <div>
-                <p>Produto: {{name}}</p>
-                <p>{{breakLine description}}</p>
-                <span>{{formatPrice price}}</span>
+            <div class="product">
+                <img src="{{imageUrl}}" class="product-image" />
+                <p class="product-title">{{name}}</p>
+                <span class="product-price">{{formatPrice price}}</span>      
                 {{#checkHighlight rating}}
-                {{/checkHighlight}}
+                {{/checkHighlight}}          
             </div>
             {{/each}}
         </script>
