@@ -14,7 +14,7 @@ p {
     margin-bottom: 2rem;
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
-    grid-template-rows: 200px 50px 50px;
+    grid-template-rows: 200px 88px 50px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
 }
 
@@ -30,6 +30,8 @@ p {
     grid-column-start: 1;
     grid-column-end: 5;
     font-weight: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .product-price {

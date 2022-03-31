@@ -1,74 +1,55 @@
 const loadProducts = (() => {
-    const productList = {
-        products: [
-            {
-                name: 'gloss',
-                description: 'Define-A-Lash Lengthening & Defining Mascara is a zero-clump mascara that creates stunning length and clean definition. The flexible brush is shaped to the lash to elongate and define lashes, one by one. The built-in wiper contours brush to remove excess formula, ensuring clean deposit on lashes. There is no smudging, smearing or flaking, and the smooth, lightweight formula feels comfortable on lashes.Allergy tested, ophthalmologist tested and contact lens safe.\n\n',
-                price: '10.79',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/brushes-6d2ab84631ecd47ced4fa07c47eb37521eb61c5a525965dafaf308f21338aa44.png',
-                rating: 4.1
-            },
-            {
-                name: 'mascara',
-                description: 'A breakthrough in no-clump mascara! Get 200% more volume and zero \nclumps. Features an innovative double-sided brush with lash-loading and \nclump-combing zones to crush clumps.Features: 200% more volume, zero clumpsInnovative curved brushSuper-volumized, beautifully separated lashes',
-                price: '20.14',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/eyeshadow-18fa4bed267bec6a67506150d9574259d0dcc67700e69de4ba720d9afe8204a2.png',
-                rating: 5
-            },
-            {
-                name: 'gloss',
-                description: 'Define-A-Lash Lengthening & Defining Mascara is a zero-clump mascara that creates stunning length and clean definition. The flexible brush is shaped to the lash to elongate and define lashes, one by one. The built-in wiper contours brush to remove excess formula, ensuring clean deposit on lashes. There is no smudging, smearing or flaking, and the smooth, lightweight formula feels comfortable on lashes.Allergy tested, ophthalmologist tested and contact lens safe.\n\n',
-                price: '10.79',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/brushes-6d2ab84631ecd47ced4fa07c47eb37521eb61c5a525965dafaf308f21338aa44.png',
-                rating: 4.1
-            },
-            {
-                name: 'mascara',
-                description: 'A breakthrough in no-clump mascara! Get 200% more volume and zero \nclumps. Features an innovative double-sided brush with lash-loading and \nclump-combing zones to crush clumps.Features: 200% more volume, zero clumpsInnovative curved brushSuper-volumized, beautifully separated lashes',
-                price: '20.14',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/eyeshadow-18fa4bed267bec6a67506150d9574259d0dcc67700e69de4ba720d9afe8204a2.png',
-                rating: 5
-            },
-            {
-                name: 'gloss',
-                description: 'Define-A-Lash Lengthening & Defining Mascara is a zero-clump mascara that creates stunning length and clean definition. The flexible brush is shaped to the lash to elongate and define lashes, one by one. The built-in wiper contours brush to remove excess formula, ensuring clean deposit on lashes. There is no smudging, smearing or flaking, and the smooth, lightweight formula feels comfortable on lashes.Allergy tested, ophthalmologist tested and contact lens safe.\n\n',
-                price: '10.79',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/brushes-6d2ab84631ecd47ced4fa07c47eb37521eb61c5a525965dafaf308f21338aa44.png',
-                rating: 4.1
-            },
-            {
-                name: 'mascara',
-                description: 'A breakthrough in no-clump mascara! Get 200% more volume and zero \nclumps. Features an innovative double-sided brush with lash-loading and \nclump-combing zones to crush clumps.Features: 200% more volume, zero clumpsInnovative curved brushSuper-volumized, beautifully separated lashes',
-                price: '20.14',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/eyeshadow-18fa4bed267bec6a67506150d9574259d0dcc67700e69de4ba720d9afe8204a2.png',
-                rating: 5
-            },
-            {
-                name: 'gloss',
-                description: 'Define-A-Lash Lengthening & Defining Mascara is a zero-clump mascara that creates stunning length and clean definition. The flexible brush is shaped to the lash to elongate and define lashes, one by one. The built-in wiper contours brush to remove excess formula, ensuring clean deposit on lashes. There is no smudging, smearing or flaking, and the smooth, lightweight formula feels comfortable on lashes.Allergy tested, ophthalmologist tested and contact lens safe.\n\n',
-                price: '10.79',
-                imageUrl: 'https://makeup-api.herokuapp.com/assets/brushes-6d2ab84631ecd47ced4fa07c47eb37521eb61c5a525965dafaf308f21338aa44.png',
-                rating: 4.1
-            }
-        ]
-    }
-    
-    const template = Handlebars.compile(document.querySelector('#load-products').innerHTML);
-    
+    const serviceUrl = 'http://makeup-api.herokuapp.com/api/v1/products.json?product_tags=natural&rating_greater_than=4.5';
+    const productListRequest = new Request(serviceUrl, {
+        method: 'GET'
+    });
+    let productList;
+
+    fetch(productListRequest)
+    .then(response => {
+        return response.json();
+    })
+    .catch(error => console.log('An error has occurred. Please try again later.', error))
+    .then(products => {
+        productList = {
+            products: products.map(product => {
+                return {
+                    name: product.name,
+                    imageUrl: product.image_link,
+                    price: product.price,
+                    rating: product.rating
+                }
+            })
+        }
+
+        registerHelpers();
+        
+        const template = Handlebars.compile(document.querySelector('#load-products').innerHTML);
+
+        document.querySelector('#products').innerHTML = template(productList);
+    });
+})();
+
+const registerHelpers = () => {
     Handlebars.registerHelper('breakLine', (text) => {
         const formattedText = Handlebars.Utils.escapeExpression(text).replace('\n', '<br/>');
 
         return new Handlebars.SafeString(formattedText);
     });
 
-    Handlebars.registerHelper('formatPrice', (price) => `$${price}`);
+    Handlebars.registerHelper('formatPrice', (price) => `$${parseFloat(price).toFixed(2)}`);
 
     Handlebars.registerHelper('checkHighlight', (rating) => {
         if (rating > 4.8) {
-            const highlight = '<span class="product-highlight">Top rated</span>';
+            const highlight = `
+            <div class="product-highlight">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                </svg>
+                <span>Top rated</span>
+            </div>
+            `;
             return new Handlebars.SafeString(highlight);
         }
-    })
-
-    document.querySelector('#products').innerHTML = template(productList);
-})();
+    });
+}
